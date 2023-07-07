@@ -1,29 +1,14 @@
 const express = require("express");
-const puppeteer = require("puppeteer");
+const { html2pdf} = require('better-html-pdf');
 
 const app = express();
 
 // Endpoint to generate and return a PDF
 app.get("/", async (req, res) => {
     try {
-        // Launch Puppeteer
-        const browser = await puppeteer.launch();
 
-        // Create a new page
-        const page = await browser.newPage();
-
-        // Navigate to a URL or generate the PDF content programmatically
-
-        await page.setContent(`
-<html lang="en">
-<body>  
-    <h1>PDF</h1>
-    <p>PDF</p>
-</body>
-</html>`);
-        // Generate the PDF
-        const pdfBuffer = await page.pdf({ format: "A4" });
-
+const fileContentBuffer = await html2pdf('<h1>Test</h1>', { fileType: 'buffer',  width: '595',
+height: '842', });
         // Close the browser
         // await browser.close();
 
@@ -32,7 +17,7 @@ app.get("/", async (req, res) => {
         res.setHeader("Content-Disposition", 'attachment; filename="example.pdf"');
 
         // Send the PDF as the response
-        res.send(pdfBuffer);
+        res.send(fileContentBuffer);
     } catch (error) {
         console.error("Error generating PDF:", error);
         res.status(500).send("Error generating PDF");
